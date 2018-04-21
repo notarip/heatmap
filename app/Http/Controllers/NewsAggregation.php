@@ -14,11 +14,37 @@ class NewsAggregation extends Controller
      */
     public function index()
     {
-        $sections = $this->getSections();
-        $news = $this->getNews();
+        $sections = json_decode($this->getSections());
+        $news = json_decode($this->getNews());
+        $agg = [];
 
-        return $sections;
+        foreach ($news as $article){
+            $categories = $article->categories;
+            $category = $categories[0];
+            if(array_key_exists($category , $agg)){
+                $agg[$category]['count'] += 1;
+            }else{
+                $agg[$category]['count'] = 1;
+                $agg[$category]['name'] = $this->getSectionName($sections,$category);
+            }
+        }
 
+        return response()->json($agg);
+    }
+
+    private function getSectionName($sections, $id)
+    {
+        $name = "argentina";
+        foreach ($sections as $section)
+        {
+            if ($section->data->id == $id)
+            {
+                $name = $section->data->slug;
+                break;
+           }
+        }
+
+        return $name;
     }
 
     private function getNews()

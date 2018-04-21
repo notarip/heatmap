@@ -51,22 +51,20 @@
     <div id="map"></div>
     <script>
 
-      // This example requires the Visualization library. Include the libraries=visualization
-      // parameter when you first load the API. For example:
-      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+      var map, heatmap, aggregate;
 
-      
       $.ajax({type: "GET",
-              url: "posts.json",
+              url: "news",
+              async: false,
               data: "{}",
               contentType: "application/json; charset=utf-8",
               dataType: "json",
               success: function (response) {
                   console.log(response);
+                  aggregate = $.map(response, function(el) { return el });
                 }
           });
 
-      var map, heatmap;
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -76,13 +74,14 @@
         });
 
         //TODO llamada ajax y armar el aggregate
-        aggregate = [{name:"rosario", count:50},
-        {name:"buenos-aires", count:50}];
+        //aggregate = [{name:"rosario", count:50},      {name:"buenos-aires", count:50}];
 
         heatmap = new google.maps.visualization.HeatmapLayer({
           data: getPoints(aggregate),
           map: map,
-          radius:50
+          radius:40,
+          opacity:1.9,
+          gradient: getGradient()
         });
       }
 
@@ -90,36 +89,40 @@
         heatmap.setMap(heatmap.getMap() ? null : map);
       }
 
+
       function changeGradient() {
-        var gradient = [
-          'rgba(0, 255, 255, 0)',
-          'rgba(0, 255, 255, 1)',
-          'rgba(0, 191, 255, 1)',
-          'rgba(0, 127, 255, 1)',
-          'rgba(0, 63, 255, 1)',
-          'rgba(0, 0, 255, 1)',
-          'rgba(0, 0, 223, 1)',
-          'rgba(0, 0, 191, 1)',
-          'rgba(0, 0, 159, 1)',
-          'rgba(0, 0, 127, 1)',
-          'rgba(63, 0, 91, 1)',
-          'rgba(127, 0, 63, 1)',
-          'rgba(191, 0, 31, 1)',
-          'rgba(255, 0, 0, 1)'
-        ]
+        var gradient = getGradient();
         heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
       }
 
+      function getGradient(){
+          return  [
+              'rgba(0, 255, 255, 0)',
+              'rgba(0, 255, 255, 1)',
+              'rgba(0, 191, 255, 1)',
+              'rgba(0, 127, 255, 1)',
+              'rgba(0, 63, 255, 1)',
+              'rgba(0, 0, 255, 1)',
+              'rgba(0, 0, 223, 1)',
+              'rgba(0, 0, 191, 1)',
+              'rgba(0, 0, 159, 1)',
+              'rgba(0, 0, 127, 1)',
+              'rgba(63, 0, 91, 1)',
+              'rgba(127, 0, 63, 1)',
+              'rgba(191, 0, 31, 1)',
+              'rgba(255, 0, 0, 1)'
+          ];
+      }
       function changeRadius() {
         heatmap.set('radius', heatmap.get('radius') ? null : 100);
       }
 
       function changeOpacity() {
-        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.9);
       }
 
       function getCoords(name){
-        coord = {"argentina": {lat:-41.00, lng:-65.19},
+        coord = {"argentina": {lat:-00, lng:-00},
           "buenos-aires": {lat:-37.24, lng:-59.77},
           "caba":{lat:-34.62, lng:-58.45},
           "catamarca": {lat:-27.60, lng:-66.90},
@@ -134,6 +137,7 @@
           "la-rioja": {lat:-29.65, lng:-66.96},
           "mendoza": {lat:-32.88, lng:-68.85},
           "misiones": {lat:-26.99, lng:-54.59},
+          "posadas": {lat:-26.99, lng:-54.59},
           "neuquen": {lat:-38.56, lng:-70.06},
           "rio-negro": {lat:-40.17, lng:-67.42},
           "salta": {lat:-24.80, lng:-65.41},

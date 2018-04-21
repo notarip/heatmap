@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Heatmaps</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      #floating-panel {
+        background-color: #fff;
+        border: 1px solid #999;
+        left: 25%;
+        padding: 5px;
+        position: absolute;
+        top: 10px;
+        z-index: 5;
+      }
+    </style>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+
+  <body>
+    <div id="floating-panel">
+      <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+      <button onclick="changeGradient()">Change gradient</button>
+      <button onclick="changeRadius()">Change radius</button>
+      <button onclick="changeOpacity()">Change opacity</button>
+    </div>
+    <div id="map"></div>
+    <script>
+
+      // This example requires the Visualization library. Include the libraries=visualization
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+
+      
+      $.ajax({type: "GET",
+              url: "posts.json",
+              data: "{}",
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              success: function (response) {
+                  console.log(response);
+                }
+          });
+
+      var map, heatmap;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 5,
+          center: {lat:-37.24, lng:-59.77},
+          //mapTypeId: 'map' //satellite
+        });
+
+        //TODO llamada ajax y armar el aggregate
+        aggregate = [{name:"rosario", count:50},
+        {name:"buenos-aires", count:50}];
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: getPoints(aggregate),
+          map: map,
+          radius:50
+        });
+      }
+
+      function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+
+      function changeGradient() {
+        var gradient = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+      }
+
+      function changeRadius() {
+        heatmap.set('radius', heatmap.get('radius') ? null : 100);
+      }
+
+      function changeOpacity() {
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+      }
+
+      function getCoords(name){
+        coord = {"argentina": {lat:-41.00, lng:-65.19},
+          "buenos-aires": {lat:-37.24, lng:-59.77},
+          "caba":{lat:-34.62, lng:-58.45},
+          "catamarca": {lat:-27.60, lng:-66.90},
+          "chaco": {lat:-26.57, lng:-60.61},
+          "chubut": {lat:-43.72, lng:-68.45},
+          "cordoba": {lat:-31.38, lng:-64.20},
+          "corrientes": {lat:-28.75, lng:-57.82},
+          "entre-rios": {lat:-28.75, lng:-57.82},
+          "formosa": {lat:-24.84, lng:-60.10},
+          "jujuy": {lat:-23.10, lng:-65.87},
+          "la-pampa": {lat:-37.04, lng:-65.65},
+          "la-rioja": {lat:-29.65, lng:-66.96},
+          "mendoza": {lat:-32.88, lng:-68.85},
+          "misiones": {lat:-26.99, lng:-54.59},
+          "neuquen": {lat:-38.56, lng:-70.06},
+          "rio-negro": {lat:-40.17, lng:-67.42},
+          "salta": {lat:-24.80, lng:-65.41},
+          "san-juan": {lat:-30.77, lng:-69.01},
+          "san-luis": {lat:-34.02, lng:-65.99},
+          "santa-cruz": {lat:-49.07, lng:-70.09},
+          "santa-fe": {lat:-30.88, lng:-60.97},
+          "rosario": {lat:-30.88, lng:-60.97},
+          "santiago-del-estero": {lat:-27.85, lng:-63.34},
+          "tierra-del-fuego": {lat:-54.19, lng:-67.77},
+          "tucuman": {lat:-26.94, lng:-65.32}};
+
+        return coord[name];
+      }
+      // Heatmap data: 500 Points
+      function getPoints(aggregate) {
+        var points = [];
+        for (var i = aggregate.length - 1; i >= 0; i--) {
+          item = aggregate[i];
+          for (var j = item.count - 1; j >= 0; j--) {
+            coord = getCoords(item.name);
+            points.push(new google.maps.LatLng(coord.lat, coord.lng));
+          }
+        }
+        return points;
+      }
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key= AIzaSyAf_Q5XWxkJ-6RKbBoGEZsC18yl-FSxA_U &libraries=visualization&callback=initMap">
+    </script>
+  </body>
+</html>

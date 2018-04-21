@@ -17,12 +17,14 @@ class NewsAggregation extends Controller
         $sections = $this->getSections();
         $news = $this->getNews();
 
+        return $sections;
+
     }
 
     private function getNews()
     {
         $client = new Client();
-        $endpoint = env("NEWS_ENDPINT");
+        $endpoint = env("NEWS_ENDPOINT");
         $res = $client->get($endpoint, array());
         return $res->getBody();
     }
@@ -30,7 +32,7 @@ class NewsAggregation extends Controller
     private function getSections()
     {
         $client = new Client();
-        $endpoint = env("SECTION_ENDPOINT");
+        $endpoint = env("SECTIONS_ENDPOINT");
         $res = $client->get($endpoint, array());
         return $res->getBody();
     }

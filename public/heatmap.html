@@ -17,8 +17,8 @@
       }
       #floating-panel {
         position: absolute;
-        top: 10px;
-        left: 25%;
+        top: 2%;
+        left: 6%;
         z-index: 5;
         background-color: #fff;
         padding: 5px;
@@ -43,10 +43,18 @@
 
   <body>
     <div id="floating-panel">
-      <button onclick="toggleHeatmap()">Toggle Heatmap</button>
-      <button onclick="changeGradient()">Change gradient</button>
-      <button onclick="changeRadius()">Change radius</button>
-      <button onclick="changeOpacity()">Change opacity</button>
+        <table id="table">
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <table>
+            <tbody>
+
+            </tbody>
+        </table>
     </div>
     <div id="map"></div>
     <script>
@@ -63,6 +71,10 @@
               success: function (response) {
                   console.log(response);
                   aggregate = $.map(response, function(el) { return el });
+                  var table = $("#table tbody");
+                  $.each(aggregate, function(idx, elem){
+                      table.append("<tr><td>"+elem.name+"</td><td>"+elem.count+"</td></tr>");
+                  });
                 }
           });
 
@@ -85,7 +97,7 @@
         });
 
           heatmap.setMap(map);
-          heatmap.set('gradient', getGradient2());
+          //heatmap.set('gradient', getGradient());
           google.maps.event.addListenerOnce(map, 'tilesloaded', modulateGradient);
 
       }
@@ -104,16 +116,6 @@
           };
 
           setTimeout(modulator, 100);
-      }
-
-      function toggleHeatmap() {
-        heatmap.setMap(heatmap.getMap() ? null : map);
-      }
-
-
-      function changeGradient() {
-        var gradient = getGradient();
-        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
       }
 
       function getGradient2() {
@@ -152,13 +154,6 @@
               'rgba(191, 0, 31, 1)',
               'rgba(255, 0, 0, 1)'
           ];
-      }
-      function changeRadius() {
-        heatmap.set('radius', heatmap.get('radius') ? null : 100);
-      }
-
-      function changeOpacity() {
-        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.9);
       }
 
       function getCoords(name){
@@ -204,6 +199,7 @@
         }
         return points;
       }
+
     </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key= AIzaSyAf_Q5XWxkJ-6RKbBoGEZsC18yl-FSxA_U &libraries=visualization&callback=initMap">

@@ -52,6 +52,7 @@
     <script>
 
       var map, heatmap, aggregate;
+      var gradient, gradientStep = -1;
 
       $.ajax({type: "GET",
               url: "news",
@@ -80,9 +81,29 @@
           data: getPoints(aggregate),
           map: map,
           radius:40,
-          opacity:1.9,
-          gradient: getGradient()
+          opacity:1.9
         });
+
+          heatmap.setMap(map);
+          heatmap.set('gradient', getGradient2());
+          google.maps.event.addListenerOnce(map, 'tilesloaded', modulateGradient);
+
+      }
+
+      function modulateGradient() {
+          var modulator = function() {
+              var newGradient = gradient.slice(0, heatmap.get('gradient').length + gradientStep);
+
+              if (newGradient.length == gradient.length || newGradient.length == 7) {
+                  gradientStep *= -1;
+              }
+
+              heatmap.set('gradient', newGradient);
+
+              setTimeout(modulator, 100);
+          };
+
+          setTimeout(modulator, 100);
       }
 
       function toggleHeatmap() {
@@ -93,6 +114,25 @@
       function changeGradient() {
         var gradient = getGradient();
         heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+      }
+
+      function getGradient2() {
+          return  [
+              'rgba(0, 255, 255, 0)',
+              'rgba(0, 255, 255, 1)',
+              'rgba(0, 191, 255, 1)',
+              'rgba(0, 127, 255, 1)',
+              'rgba(0, 63, 255, 1)',
+              'rgba(0, 0, 255, 1)',
+              'rgba(0, 0, 223, 1)',
+              'rgba(0, 0, 191, 1)',
+              'rgba(0, 0, 159, 1)',
+              'rgba(0, 0, 127, 1)',
+              'rgba(63, 0, 91, 1)',
+              'rgba(127, 0, 63, 1)',
+              'rgba(191, 0, 31, 1)',
+              'rgba(255, 0, 0, 1)'
+          ];
       }
 
       function getGradient(){

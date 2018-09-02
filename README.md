@@ -16,4 +16,4 @@ attemp to make a heatmap with crossing news and regions
 - php artisan serve
 
 ### Contributors
-- @notarip (tw:@pablito_ernesto)
+- @pablito-ernesto (tw:@pablito_ernesto)
